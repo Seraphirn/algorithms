@@ -116,7 +116,7 @@ class ListItem extends Vertice{
 abstract class BaseList {
 	abstract public function retrive($index);
 	abstract public function locate($name);
-	abstract public function insert(&$item, $index=NULL);
+	abstract public function insert($item, $input=NULL);
 	abstract public function delete($input);
 	abstract public function show();
 
@@ -153,7 +153,7 @@ class ArrayList extends BaseList {
 		return $i+1;
 	}
 
-	public function insert(&$item, $input=NULL) {
+	public function insert($item, $input=NULL) {
 		switch (gettype($input)) {
 			case 'string':
 				$index = $this->locate($input);
@@ -167,6 +167,17 @@ class ArrayList extends BaseList {
 			default:
 				return false;
 		};
+
+		switch (gettype($item)) {
+			case 'string':
+				$item = new ListItem($item);
+				break;
+			case 'object':
+				break;
+			default:
+				return false;
+		};
+
 		$replaceItem = &$item;		
 		for ($i=$index-1; $i<$this->count; $i++) {
 			$tmpItem = &$this->array[$i];
@@ -266,8 +277,20 @@ class DynamicList extends BaseList {
 		return $index;
 	}
 
-	public function insert(&$item, $index=NULL) {
-		
+	public function insert($item, $input=NULL) {
+		switch (gettype($input)) {
+			case 'string':
+				$index = $this->locate($input);
+				break;
+			case 'integer':
+				$index = $input;
+				break;
+			case 'NULL':
+				$index = $this->count+1;
+				break;
+			default:
+				return false;
+		};
 		switch (gettype($item)) {
 			case 'string':
 				$item = new ListItem($item);
@@ -276,10 +299,6 @@ class DynamicList extends BaseList {
 				break;
 			default:
 				return false;
-		}
-
-		if (is_null($index)) {
-			$index = $this->count+1;
 		};
 
 		if (is_null($this->head)) {			
@@ -308,7 +327,6 @@ class DynamicList extends BaseList {
 		switch (gettype($input)) {
 			case 'string':
 				$index = $this->locate($input);
-				print($index);
 				break;
 			case 'integer':
 				$index = $input;
